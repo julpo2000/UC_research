@@ -21,19 +21,16 @@ fire_data3_name = "data/S5P_PAL__L2__NO2____20210101T164406_20210101T182536_1668
 
 
 file = netCDF4.Dataset(fire_data3_name, format="NETCDF4")
+print(file.groups)
 NO_data = file['PRODUCT/nitrogendioxide_tropospheric_column']
 lat_data = np.array(file['PRODUCT/latitude'])
 long_data = np.array(file['PRODUCT/longitude'])
+data_quality = np.array(file['PRODUCT/qa_value'])
 
 NO_data = np.array(NO_data)
-
-print(long_data)
-print(long_data.shape)
-NO_data = NO_data.reshape(long_data.shape).squeeze()
-
-plt.imshow(NO_data)
-
-plt.show()
+# NO_data = NO_data.reshape(long_data.shape).squeeze()
+# plt.imshow(NO_data)
+# plt.show()
 
 amount_of_data_points = -1
 remove_masked_values = True
@@ -41,15 +38,22 @@ partial_plot = True
 longitude_range = (-85, -75)
 latitude_range = (20, 35)
 
+filter_quality = True
+minimal_data_quality = 0.75
 
-data = np.array([NO_data.flatten()[:amount_of_data_points], long_data.flatten()[:amount_of_data_points], lat_data.flatten()[:amount_of_data_points]]).transpose()
-columns = ["NO", "Longitude", "Latitude"]
+
+data = np.array([NO_data.flatten()[:amount_of_data_points], long_data.flatten()[:amount_of_data_points],
+                 lat_data.flatten()[:amount_of_data_points], data_quality.flatten()[:amount_of_data_points]]).transpose()
+columns = ["NO", "Longitude", "Latitude", "qa"]
 data_frame = pd.DataFrame(data=data, columns=columns)
 
 print(data_frame.head())
 geometry = [Point(xy) for xy in zip(data_frame["Longitude"], data_frame["Latitude"])]
 geo_dataframe = gpd.GeoDataFrame(data_frame, crs={'init': "epsg:4326"}, geometry=geometry)
 
+if filter_quality:
+    print("filtering on quality..")
+    geo_dataframe = geo_dataframe[geo_dataframe["qa"] >= minimal_data_quality]
 if remove_masked_values:
     print("removing masked values..")
     geo_dataframe = geo_dataframe[geo_dataframe["NO"] < 1]
