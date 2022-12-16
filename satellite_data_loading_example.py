@@ -11,6 +11,7 @@ import geopandas as gpd
 from shapely.geometry import Point, Polygon
 import seaborn as sns
 
+# download data from https://data-portal.s5p-pal.com/browser/BXADeFDHwTQ3o8nrrhTDZSMwnfrWHe16d/2JM1fiAU7vaLzQZSRP3o4uRznddN4VH4NGpp4dfkKSnZV4hzrZifph
 file_name1 = "data/S5P_PAL__L2__NO2____20210101T031206_20210101T045336_16681_01_020301_20211112T015828.nc"
 file_name2 = "S5P_PAL__L2__NO2____20211101T100047_20211101T114216_20998_02_020301_20211215T122137.nc"
 file_name3 = "S5P_PAL__L2__NO2____20210825T011458_20210825T025628_20028_02_020301_20211108T083237.nc"
@@ -35,11 +36,14 @@ NO_data = np.array(NO_data)
 amount_of_data_points = -1
 remove_masked_values = True
 partial_plot = True
-longitude_range = (-85, -75)
-latitude_range = (20, 35)
+longitude_range = (-124, -116)
+latitude_range = (35, 42)
+
+# 40.2954 -122.9499 NoCal
+# 38.6944 -120.1343 Eldorado NF
 
 filter_quality = True
-minimal_data_quality = 0.75
+minimal_data_quality = 0.5
 
 
 data = np.array([NO_data.flatten()[:amount_of_data_points], long_data.flatten()[:amount_of_data_points],
@@ -64,9 +68,14 @@ print(data_frame.head())
 geometry = [Point(xy) for xy in zip(data_frame["Longitude"], data_frame["Latitude"])]
 geo_dataframe = gpd.GeoDataFrame(data_frame, crs={'init': "epsg:4326"}, geometry=geometry)
 
+df = gpd.read_file('data/s_22mr22.zip')
+
 
 fig, ax = plt.subplots(1, 1)
+df.boundary.plot(ax=ax)
 geo_dataframe.plot(column="NO", ax=ax, legend=True)
+plt.ylim(latitude_range)
+plt.xlim(longitude_range)
 plt.show()
 
 
