@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import netCDF4
 import numpy as np
+
+from blob_detection import plume_mask
 from morans_i import morans_i
 
 # download data from https://data-portal.s5p-pal.com/browser/BXADeFDHwTQ3o8nrrhTDZSMwnfrWHe16d/2JM1fiAU7vaLzQZSRP3o4uRznddN4VH4NGpp4dfkKSnZV4hzrZifph
@@ -42,14 +44,15 @@ index_of_interest = (result[0][0], result[1][0])
 print(index_of_interest)
 
 
-NO_data_sliced = NO_data[index_of_interest[0] - pixel_radius: index_of_interest[0] + pixel_radius, index_of_interest[1] - pixel_radius: index_of_interest[1] + pixel_radius]
+NO_data_sliced = NO_data[index_of_interest[0] - pixel_radius: index_of_interest[0] + pixel_radius,
+                         index_of_interest[1] - pixel_radius: index_of_interest[1] + pixel_radius]
 
 # masked values are set to 0 instead of 9.97e+36
 if filter_out_masked_value:
     NO_data_sliced = NO_data_sliced * (NO_data_sliced < 1)
 
 
-fig, (ax1, ax2) = plt.subplots(1, 2)
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
 fig.suptitle('NO_data')
 ax1.set_title("Raw NO data")
 ax1.imshow(NO_data_sliced)
@@ -57,4 +60,13 @@ ax1.imshow(NO_data_sliced)
 morans_i = morans_i(NO_data_sliced)
 ax2.set_title("Local Morans I")
 ax2.imshow(morans_i)
+
+plume_mask = plume_mask(morans_i, sensitivity=2)
+ax3.set_title("Plume Mask")
+ax3.imshow(plume_mask)
+
 plt.show()
+
+
+
+
