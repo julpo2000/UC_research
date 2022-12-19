@@ -4,6 +4,7 @@ import numpy as np
 
 from blob_detection import plume_mask
 from morans_i import morans_i
+from total_NO2_calculations import calculate_no2_in_plume
 
 # download data from https://data-portal.s5p-pal.com/browser/BXADeFDHwTQ3o8nrrhTDZSMwnfrWHe16d/2JM1fiAU7vaLzQZSRP3o4uRznddN4VH4NGpp4dfkKSnZV4hzrZifph
 
@@ -52,8 +53,7 @@ if filter_out_masked_value:
     NO_data_sliced = NO_data_sliced * (NO_data_sliced < 1)
 
 
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3)
-fig.suptitle('NO_data')
+fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4)
 ax1.set_title("Raw NO data")
 ax1.imshow(NO_data_sliced)
 
@@ -64,6 +64,11 @@ ax2.imshow(morans_i)
 plume_mask = plume_mask(morans_i, sensitivity=2)
 ax3.set_title("Plume Mask")
 ax3.imshow(plume_mask)
+
+result = calculate_no2_in_plume(plume_mask*NO_data_sliced)
+print(f"Total NO2 in KG: {result}")
+ax4.set_title(f"NO2 in Plume: {int(result)} KG")
+ax4.imshow(plume_mask*NO_data_sliced)
 
 plt.show()
 
