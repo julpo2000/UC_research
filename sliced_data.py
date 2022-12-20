@@ -8,12 +8,15 @@ from total_NO2_calculations import calculate_no2_in_plume
 
 # download data from https://data-portal.s5p-pal.com/browser/BXADeFDHwTQ3o8nrrhTDZSMwnfrWHe16d/2JM1fiAU7vaLzQZSRP3o4uRznddN4VH4NGpp4dfkKSnZV4hzrZifph
 
-fire_data4_nocal = "data/S5P_PAL__L2__NO2____20210820T194529_20210820T212659_19968_02_020301_20211108T080501.nc"
-fire_data5_Eldorado_NF = "data/S5P_PAL__L2__NO2____20210830T195715_20210830T213844_20110_02_020301_20211108T090529.nc"
-fire_data6_test = "data/S5P_PAL__L2__NO2____20210710T191622_20210710T205752_19386_02_020301_20211107T175245.nc"
+fire_1 = {"file": "data/S5P_PAL__L2__NO2____20210831T193807_20210831T211937_20124_02_020301_20211108T091419.nc", "point_of_interest" : (39.9901 -120.5113)}
+fire_2 = {"file": "data/S5P_PAL__L2__NO2____20210723T201253_20210723T215423_19571_02_020301_20211107T190856.nc", "point_of_interest" : (40.0246,-120.9138)}
+fire_3 = {"file": "data/S5P_PAL__L2__NO2____20210803T200552_20210803T214721_19727_02_020301_20211108T061938.nc", "point_of_interest" : (40.7763,-123.3876)}
+fire_4 = {"file": "data/S5P_PAL__L2__NO2____20210620T185122_20210620T203252_19102_01_020301_20211107T155510.nc", "point_of_interest" : (39.7297,-108.8945)}
+fire_5 = {"file": "data/S5P_PAL__L2__NO2____20210907T190542_20210907T204711_20223_02_020301_20211108T095642.nc", "point_of_interest" : (41.6047,-121.7298)}
 
+choosen_fire=fire_5
 
-file = netCDF4.Dataset(fire_data6_test, format="NETCDF4")
+file = netCDF4.Dataset(choosen_fire["file"], format="NETCDF4")
 print(file.groups)
 NO_data =  np.array(file['PRODUCT/nitrogendioxide_tropospheric_column']).squeeze()
 lat_data = np.array(file['PRODUCT/latitude']).squeeze()
@@ -30,7 +33,7 @@ print(data_quality.shape)
 # goal point: 39.9, -120.70
 
 # point_of_interest = (39.9, -120.7)
-point_of_interest = (42.605, -121.1568)
+point_of_interest = choosen_fire["point_of_interest"]
 max_error = 0.1
 pixel_radius = 15
 filter_out_masked_value = True
