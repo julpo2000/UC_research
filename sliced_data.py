@@ -53,22 +53,22 @@ if filter_out_masked_value:
     NO_data_sliced = NO_data_sliced * (NO_data_sliced < 1)
 
 
-fig, (ax1, ax2, ax3, ax4) = plt.subplots(1, 4)
-ax1.set_title("Raw NO data")
-ax1.imshow(NO_data_sliced)
+fig, axs = plt.subplots(2, 2)
+axs[0, 0].set_title("Raw NO data")
+axs[0, 0].imshow(NO_data_sliced)
 
 morans_i = morans_i(NO_data_sliced)
-ax2.set_title("Local Morans I")
-ax2.imshow(morans_i)
+axs[0, 1].set_title("Local Morans I")
+axs[0, 1].imshow(morans_i)
 
 plume_mask = plume_mask(morans_i, sensitivity=2)
-ax3.set_title("Plume Mask")
-ax3.imshow(plume_mask)
+axs[1, 0].set_title("Plume Mask")
+axs[1, 0].imshow(plume_mask)
 
 result = calculate_no2_in_plume(plume_mask*NO_data_sliced)
 print(f"Total NO2 in KG: {result}")
-ax4.set_title(f"NO2 in Plume: {int(result)} KG")
-ax4.imshow(plume_mask*NO_data_sliced)
+axs[1, 1].set_title(f"NO2 in Plume: {int(result)} KG")
+axs[1, 1].imshow(plume_mask*NO_data_sliced)
 
 plt.show()
 
